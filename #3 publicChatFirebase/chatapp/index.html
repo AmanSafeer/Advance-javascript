@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+</head>
+<style>
+    body{
+        margin: 0;
+        padding: 0;
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif; 
+        background: lightgray;
+    }
+    h1{
+        display: block;
+        text-align: center;
+        background: white;
+        color: #584101;
+    }
+    #modal,#modalSecond{
+        position: fixed;
+        top:0;
+        left: 0;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        width: 100%;
+    }
+    #modalSecond{
+        display: none;
+        color: red
+    }
+    .modal_content{
+        margin: 100px auto;
+        padding: 30px;
+        background: white;
+        width: 300px;
+        box-shadow: 0px 0px 30px 0px;
+        overflow: hidden;
+
+    }
+    .form{
+        margin:0px auto;
+        width: 90%;
+        overflow: hidden;
+    }
+    .name{
+        margin-top: 10px;
+        width: 98%;
+        height: 30px;
+        background: white; 
+    }
+    .submit{
+        margin-top: 10px;
+        height: 30px;
+        float: right;
+        background: white;
+        border: 1px solid gray;
+        cursor: pointer;
+    }
+    #chat_container{
+        margin: 10px auto;
+        width: 90%;
+        height: 500px;
+        background: white;
+        box-shadow: 0px 0px 40px 0px gray;
+    }
+    .messages_field{
+        display: block;
+        width: 100%;
+        height: 460px;
+        overflow: auto;
+    }
+    .input_field{
+        width: 100%;
+        height: 38px;
+        border-top: 2px solid lightgray;
+    }
+    .input{
+        height: 95%;
+        border: none;
+        width:70%;
+        padding: 0% 5%;
+    }
+    .send_btn{
+        height: 100%;
+        background: white;
+        border: none;
+        border-left: 1px solid lightgray;
+        cursor: pointer;
+        width: 20%;
+        font-weight: bold;
+    }
+    .send_btn:hover{
+        background:#584101;
+        color:white;
+    }
+    .messageDiv{
+        margin: 1% 3%;
+        display: block;
+        overflow: hidden;
+        width: 64%;
+        margin-right: 26%;
+        float: left;
+    }
+    td{
+        padding: 5px 10px;
+    }
+    .userName{
+        background: none;
+        color:#584101;
+        word-break:normal;
+    }
+    .userMessage{
+        color: white;
+        background: #584101;
+        white-space: pre-wrap;
+        word-break: break-word;
+
+    }
+</style>
+<body>
+    <div id="modal">
+        <div class="modal_content">
+            <div class="form">
+                <input class="name" type="text" name="Name" autocomplete="off" placeholder="Enter your nick name..."><br>
+                <button class="submit" type="submit" onclick=" return submitForm()">Enter chat</button>
+            </div>
+        </div>
+    </div>
+    <div id="modalSecond">
+        <div class="modal_content">
+            <p>Alert! Entered User name is already exist. 
+            if that user is you, click "Yes", otherwise click "No" </p>
+            <button class="submit" type="submit" onclick="yes()">Yes</button>
+            <button class="submit" type="submit" onclick="no()">No, i am new </button>
+        </div>
+    </div>
+    <h1>Public Chat</h1>
+        <div id="chat_container">
+            <table class="messages_field"></table>
+            <div class="input_field">
+                <input class="input" type="text" placeholder="Enter your message..."><button class="send_btn" onclick="sendMessage()">Send</button> 
+            </div>
+        </div>
+    <script src="https://www.gstatic.com/firebasejs/live/3.0/firebase.js"></script>
+    
+    <script>
+            // Initialize Firebase
+        var config = {
+        apiKey: "AIzaSyByuYMJoj4HaTcvHwx8l14hjoHcPTL1LYU",
+        authDomain: "amanpublicchat.firebaseapp.com",
+        databaseURL: "https://amanpublicchat.firebaseio.com",
+        projectId: "amanpublicchat",
+        storageBucket: "amanpublicchat.appspot.com",
+        messagingSenderId: "175083406903"
+        };
+        firebase.initializeApp(config);
+
+        var database = firebase.database();
+        var ref = database.ref('messages');
+
+        const existingNames = [];
+        let name;
+        let nameExist = false;
+        let userName;
+        let title = document.getElementsByTagName('title')[0];
+        let modal;
+        let modal2
+
+        function submitForm(){
+        userName = document.getElementsByClassName('name')[0].value;
+        modal = document.getElementById('modal');
+        modal2 = document.getElementById('modalSecond');
+           if(userName==""){
+               alert("please enter your name");
+               return false;
+           }
+           else{
+            nameExist = existingNames.some((val)=> userName === val)
+                if(nameExist){
+                    modal.style.display = "none";
+                    modal2.style.display = "block"
+                }
+                else{
+                    name = userName;
+                    modal.style.display = "none";
+                    title.innerHTML = "Public Chat | "+userName;
+                }
+           }
+       }
+       function yes(){
+        name = userName;
+        modal2.style.display = "none"
+        title.innerHTML = "Public Chat | "+userName;
+       }
+       function no(){
+        modal2.style.display = "none"
+        modal.style.display = "block";
+       }
+
+
+       var messageField = document.getElementsByClassName('messages_field')[0];
+
+       function sendMessage(){
+        var messageObj, messageMainDiv,userDiv,messageDiv,user,message,arrayString,getStringArray,getArray;
+
+        var messageText = document.getElementsByClassName('input')[0].value;
+        
+        // putting name and message in object   
+           function Message(user, userMessage){
+               this.name = user;
+               this.message = userMessage;
+           }
+            messageObj = new Message(name, messageText);
+
+        // inserting object in array  
+        if(messageObj.message !== ""){
+            ref.push(messageObj);
+        } 
+           document.getElementsByClassName('input')[0].value="";
+       }
+
+       function showMessages(){
+
+         // inserting messages in chat container:
+
+            ref.on("value", getData, getError)
+
+            function getData(data){
+                var messagesData = data.val();
+
+                messageField.innerHTML = "";
+                
+                if(messagesData){
+                    var keys = Object.keys(messagesData)
+                    for(var i=0; i<keys.length; i++){
+                        k = keys[i];
+                        existingNames.push(messagesData[k].name);
+
+                        //creating main box to insert user box and message box in it
+                        messageMainDiv = document.createElement('tr');
+                        messageMainDiv.setAttribute("class","messageDiv")
+
+                        //creating user box and message box & inserting the user name & message in it
+                        userDiv = document.createElement('td'); 
+                        messageDiv = document.createElement('td');
+
+                        userDiv.setAttribute("class","userName");
+                        messageDiv.setAttribute("class","userMessage")
+
+                        user = document.createTextNode(messagesData[k].name+":");
+                        message = document.createTextNode(messagesData[k].message);
+
+
+                        userDiv.appendChild(user);
+                        messageDiv.appendChild(message);
+
+                        //inserting user box and message box in main box
+                        messageMainDiv.appendChild(userDiv);
+                        messageMainDiv.appendChild(messageDiv);
+
+                        if(messagesData[k].name == name){
+                            userDiv.style.display = "none";
+                            messageDiv.style.background = "#014b58";
+                            messageDiv.style.float = "right";
+                            messageMainDiv.style.float = "right";
+                            messageMainDiv.style.marginRight = "3%";
+                            messageMainDiv.style.marginLeft = "26%";
+
+                        }
+                        messageField.appendChild(messageMainDiv);
+                        
+                    }   
+                }
+           }
+           function getError(error){
+                console.log(error)
+            } 
+           
+        }
+       setInterval(showMessages,1000);
+
+    </script>
+   
+</body>
+</html>
