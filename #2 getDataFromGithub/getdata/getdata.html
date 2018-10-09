@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <title>Get data</title>
+    <style>
+        #div{
+            display: none;
+        }
+        #error{
+            color:red;
+        }
+        table{
+            float: left;
+            margin:20px 20px;
+            width:45%;
+           border: 1px solid black;
+        }
+        th{
+            padding: 10px 5px !important;
+            background: gray;
+            color:white;
+        }
+        th,td{
+            border-bottom:1px solid lightgray;
+            width: 100%;
+            text-align:left;
+            padding: 3px 5px;
+        }
+       
+    </style>
+</head>
+<body>
+    Enter the github User:<br><input type="text" id="userName"> <button id="button" onclick="getUserInformation()">Submit</button>
+    <div id="error"></div>
+    For example: (fabpot, andrew, egoist, ornicar, bebraw)
+    <div id="div">
+    </div>
+    <script>
+        const container = document.getElementById("container");
+        const errorDiv = document.getElementById("error");
+        const div = document.getElementById("div");
+        
+        function getUserInformation(){
+                const getName = document.getElementById("userName");
+                let url = 'https://api.github.com/users/'+ getName.value;
+
+            function getUserData(){
+                    $.ajax({
+                        url: url,
+                        type: "GET",
+                        success: function(data){
+                                errorDiv.innerHTML="";
+                                var table = document.createElement("table");
+                                div.appendChild(table);
+                                div.style.display = "block";
+                                table.innerHTML +="<tr><th>Properties</th><th>Details</th></tr>"
+                                for (var list in data){
+                                    table.innerHTML +="<tr><td>"+list+"</td><td>"+data[list]+"</td></tr>"
+                            }
+                            console.log({data}) ;   
+                        },
+                        error: function(error){
+                            errorDiv.innerHTML="";
+                            errorDiv.innerHTML="Invalid user";
+                            console.log(error);
+                        }
+                    })  
+            }
+            getUserData();
+            getName.value = "";
+
+            /*function getUserInfo(){
+                const options = {
+                    method:"GET",
+                    headers:{
+                        'Content-type':'application/json'
+                    }
+                }
+                fetch(url,options)
+                .then(function(response){
+                    if(response.status == 200){
+                        return response.json();
+                    }
+                    else{
+                        throw response;
+                    } 
+                })
+                .then(function(data){
+                    errorDiv.innerHTML="";
+                    var table = document.createElement("table");
+                    div.appendChild(table);
+                    div.style.display = "block";
+                    table.innerHTML +="<tr><th>Properties</th><th>Details</th></tr>"
+                    for (var list in data){
+                        table.innerHTML +="<tr><td>"+list+"</td><td>"+data[list]+"</td></tr>"
+                    }
+                })
+                .catch(function(error){
+                    errorDiv.innerHTML="";
+                    errorDiv.innerHTML="Invalid user";
+                    console.log(error);
+                })
+            }   
+            getUserInfo();
+            getName.value = "";*/
+        } 
+    </script>
+</body>
+</html>
