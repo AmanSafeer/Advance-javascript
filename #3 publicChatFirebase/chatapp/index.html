@@ -115,7 +115,7 @@
     .userMessage{
         color: white;
         background: #584101;
-        white-space: pre-wrap;
+        white-space: normal;
         word-break: break-word;
 
     }
@@ -178,7 +178,7 @@
                return false;
            }
            else{
-            nameExist = existingNames.some((val)=> userName === val)
+            nameExist = existingNames.some((val)=> userName.toLowerCase() === val.toLowerCase())
                 if(nameExist){
                     modal.style.display = "none";
                     modal2.style.display = "block"

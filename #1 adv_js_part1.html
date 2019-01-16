@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>adv_js 1</title>
+</head>
+<body>
+    <script>
+        //QUESTION 1
+        const array = [1,2,3,4,5,6,7,8,9,10];
+        const duplicateArray = array.map(function(value){
+            return value;
+        });
+        console.log({duplicateArray});
+
+
+
+        //QUESTION 2
+        const num = 2;
+        function squareNum(number){
+            return Math.pow(number,2)
+        }
+        const sqaure = squareNum(num);
+        console.log({sqaure});
+
+
+
+
+        //QUESTION 3
+        //imperative way
+        const oldArray = [1,2,3,4,5];
+        const impArray = []
+        for (let i=0; i<oldArray.length; i++){
+            impArray.push(Math.pow(oldArray[i],2)); 
+        }
+        console.log({impArray});
+
+        //declarative way
+        const decArray = oldArray.map((value) =>{
+            return Math.pow(value,2);
+        })
+        console.log({decArray});
+
+
+
+
+        //QUESTION 4
+        //imperative way;
+        const newArray = [1,2,3,4,5,6,7,8,9,10]
+        let sumOfNum = 0;
+        for(let i=0; i<newArray.length;i++){
+            sumOfNum += newArray[i];
+        }
+        console.log({sumOfNum});
+
+
+        //QUESTION 5
+        const pureImpArray = [1,2,3,4,5];
+        function imperativeWay(value){
+            var squareOfNumImp =  Math.pow(value,2)
+            console.log({squareOfNumImp});
+        }
+        for (var i=0; i<pureImpArray.length; i++){
+             imperativeWay(pureImpArray[i]);
+        }
+
+        //declarativeWay
+        const pureDecArray = [1,2,3,4,5];
+        function declarativeWay(value){
+            let squareOfNumDec =  Math.pow(value,2)
+            console.log ({squareOfNumDec});
+        }
+        pureImpArray.map(declarativeWay);
+
+    </script>
+</body>
+</html>
